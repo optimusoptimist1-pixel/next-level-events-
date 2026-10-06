@@ -209,8 +209,8 @@ export const CategoriesView = () => {
 
     setUploading(true);
     const compressed = await compressImage(file);
-    if (compressed.size > 5 * 1024 * 1024) {
-      toast.error("Image is still over 5MB after compression");
+    if (compressed.size > 4 * 1024 * 1024) {
+      toast.error("Image is still over 4MB after compression");
       setUploading(false);
       return;
     }
@@ -262,8 +262,8 @@ export const CategoriesView = () => {
 
     setSubUploading(true);
     const compressed = await compressImage(file);
-    if (compressed.size > 5 * 1024 * 1024) {
-      toast.error("Image is still over 5MB after compression");
+    if (compressed.size > 4 * 1024 * 1024) {
+      toast.error("Image is still over 4MB after compression");
       setSubUploading(false);
       return;
     }
@@ -558,7 +558,7 @@ export const CategoriesView = () => {
                         <div className="text-xs font-bold text-[#381932] dark:text-[#FFF3E6]">
                           {form.image ? "Change Image" : "Choose Image"}
                         </div>
-                        <div className="text-[10px] text-[#381932] font-semibold">Drag &amp; drop or browse · Max 5MB</div>
+                        <div className="text-[10px] text-[#381932] font-semibold">Drag &amp; drop or browse · Max 4MB</div>
                       </>
                     )}
                   </label>
@@ -736,7 +736,7 @@ export const CategoriesView = () => {
                         <div className="text-xs font-bold text-[#381932] dark:text-[#FFF3E6]">
                           {subImage ? "Change Image" : "Choose Image"}
                         </div>
-                        <div className="text-[10px] text-[#381932] font-semibold">Drag &amp; drop or browse · Max 5MB</div>
+                        <div className="text-[10px] text-[#381932] font-semibold">Drag &amp; drop or browse · Max 4MB</div>
                       </>
                     )}
                   </label>
@@ -846,7 +846,7 @@ export const CategoriesView = () => {
                         <div className="text-xs font-bold text-[#381932] dark:text-[#FFF3E6]">
                           {subImage ? "Change Image" : "Choose Image"}
                         </div>
-                        <div className="text-[10px] text-[#381932] font-semibold">Max 5MB (JPG, PNG, WebP)</div>
+                        <div className="text-[10px] text-[#381932] font-semibold">Max 4MB (JPG, PNG, WebP)</div>
                       </>
                     )}
                   </label>

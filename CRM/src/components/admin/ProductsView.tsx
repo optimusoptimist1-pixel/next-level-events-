@@ -263,8 +263,8 @@ export const ProductsView = () => {
 
     setUploading(true);
     const compressed = await compressImage(file);
-    if (compressed.size > 5 * 1024 * 1024) {
-      toast.error("Image is still over 5MB after compression");
+    if (compressed.size > 4 * 1024 * 1024) {
+      toast.error("Image is still over 4MB after compression");
       setUploading(false);
       return;
     }
@@ -316,8 +316,8 @@ export const ProductsView = () => {
 
     setMoreUploading(true);
     const compressed = await compressImage(file);
-    if (compressed.size > 5 * 1024 * 1024) {
-      toast.error("Image is still over 5MB after compression");
+    if (compressed.size > 4 * 1024 * 1024) {
+      toast.error("Image is still over 4MB after compression");
       setMoreUploading(false);
       return;
     }
@@ -711,7 +711,7 @@ export const ProductsView = () => {
                         <span className="text-xs font-bold">
                           {form.image ? "Change Image" : "Choose Image"}
                         </span>
-                        <span className="text-[10px] font-semibold opacity-70">Drag & drop or browse · Max 5MB</span>
+                        <span className="text-[10px] font-semibold opacity-70">Drag & drop or browse · Max 4MB</span>
                       </>
                     )}
                   </label>
@@ -765,7 +765,7 @@ export const ProductsView = () => {
                       <>
                         <Upload size={20} />
                         <span className="text-xs font-bold">Add More Images</span>
-                        <span className="text-[10px] font-semibold opacity-70">Drag & drop or browse · Max 5MB</span>
+                        <span className="text-[10px] font-semibold opacity-70">Drag & drop or browse · Max 4MB</span>
                       </>
                     )}
                   </label>

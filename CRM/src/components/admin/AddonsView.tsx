@@ -106,6 +106,8 @@ export const AddonsView = () => {
   };
 
   const isValidImageUrl = (value: string) => {
+    // Site-relative paths ("/cabana.webp") are valid -- resolveImageUrl() handles them.
+    if (/^\/[^/]/.test(value)) return true;
     try {
       const url = new URL(value);
       return url.protocol === 'http:' || url.protocol === 'https:';
@@ -122,8 +124,8 @@ export const AddonsView = () => {
 
     setUploading(true);
     const compressed = await compressImage(file);
-    if (compressed.size > 5 * 1024 * 1024) {
-      toast.error('Image is still over 5MB after compression');
+    if (compressed.size > 4 * 1024 * 1024) {
+      toast.error('Image is still over 4MB after compression');
       setUploading(false);
       return;
     }
@@ -456,7 +458,7 @@ export const AddonsView = () => {
                     <>
                       <div className="flex justify-center text-[#381932] mb-2"><Upload size={24} /></div>
                       <div className="text-xs font-bold text-[#381932] dark:text-[#FFF3E6]">{form.image ? 'Change Image' : 'Choose Image File'}</div>
-                      <div className="text-[10px] text-[#381932] font-semibold">Drag &amp; drop or click to browse · Max 5MB</div>
+                      <div className="text-[10px] text-[#381932] font-semibold">Drag &amp; drop or click to browse · Max 4MB</div>
                     </>
                   )}
                 </label>
