@@ -11,12 +11,14 @@ import { supabase } from '../lib/supabaseClient';
  * invocation open per browser tab indefinitely and couldn't broadcast
  * across separate serverless containers anyway).
  *
- * Falls back to focus/visibility revalidation (and the app-wide
- * `tdp_catalog_invalidate` event, which other components also listen for
- * independently -- e.g. ProductPage/BookingPage -- so it stays wired here
- * even though it's not Realtime-specific) if the Realtime connection drops.
- * Each hook still owns its own fetch/parse/cache logic, this just decides
- * *when* to re-fetch.
+ * Falls back to focus/visibility revalidation if the Realtime connection
+ * drops. Each hook still owns its own fetch/parse/cache logic, this just
+ * decides *when* to re-fetch.
+ *
+ * Do NOT listen for `tdp_catalog_invalidate` here: useProducts dispatches it
+ * after every forced refresh, so reacting to it with another forced refresh
+ * is an infinite loop (one focus event produced thousands of requests).
+ * ProductPage/BookingPage listen for it on their own.
  */
 export function useLiveSync(revalidate: (force: boolean) => void, tables: string[]): void {
   const revalidateRef = useRef(revalidate);
@@ -52,13 +54,11 @@ export function useLiveSync(revalidate: (force: boolean) => void, tables: string
     };
     window.addEventListener('focus', revalidateOnFocus);
     document.addEventListener('visibilitychange', revalidateOnFocus);
-    window.addEventListener('tdp_catalog_invalidate', revalidateOnFocus);
 
     return () => {
       if (channel) supabase?.removeChannel(channel);
       window.removeEventListener('focus', revalidateOnFocus);
       document.removeEventListener('visibilitychange', revalidateOnFocus);
-      window.removeEventListener('tdp_catalog_invalidate', revalidateOnFocus);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableKey]);
