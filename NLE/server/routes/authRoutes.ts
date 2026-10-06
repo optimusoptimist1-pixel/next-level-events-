@@ -217,10 +217,37 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
       return res.status(err?.statusCode || 401).json({ msg: err?.message || "Invalid sign-in token." });
     }
 
-    const { uid, email, firstName, lastName, photoURL } = identity;
+    const { uid, email, emailVerified, signInProvider, firstName, lastName, photoURL } = identity;
     const normalizedEmail = email.trim().toLowerCase();
 
+    // Firebase does not verify an address at email/password signup, so anyone
+    // can create a "password" account for someone else's email. Never let such
+    // a token take over an existing account unless it's provably the same
+    // Firebase account (stored uid) or the address is verified. Google tokens
+    // always carry a verified address.
+    if (signInProvider === "google.com" && !emailVerified) {
+      return res.status(401).json({ msg: "Your Google account's email address is not verified." });
+    }
+
     let user = await UserRepository.findByEmail(normalizedEmail);
+
+    if (user) {
+      const sameFirebaseAccount = !!user.google_id && user.google_id === uid;
+      if (!sameFirebaseAccount && !emailVerified) {
+        const privileged = user.role === "admin" || user.role === "staff";
+        const boundToSomeoneElse = !!user.google_id;
+        if (privileged || boundToSomeoneElse) {
+          return res.status(403).json({
+            msg: "This email is already registered. Please sign in with Google, or verify your email address first.",
+          });
+        }
+      }
+      // First sign-in via Firebase for an existing, unbound customer: bind it
+      // so only this Firebase account can claim this user from now on.
+      if (!user.google_id) {
+        user = (await UserRepository.update(user.id, { google_id: uid })) || user;
+      }
+    }
 
     if (!user) {
       user = await UserRepository.create({

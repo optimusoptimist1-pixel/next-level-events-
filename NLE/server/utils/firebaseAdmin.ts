@@ -18,6 +18,8 @@ export interface VerifiedFirebaseIdentity {
   uid: string;
   email: string;
   emailVerified: boolean;
+  /** "google.com" (Google verifies the address) or "password" (Firebase does NOT verify it at signup). */
+  signInProvider: "google.com" | "password";
   firstName: string;
   lastName: string;
   photoURL: string;
@@ -52,6 +54,7 @@ export async function verifyFirebaseIdToken(idToken: string): Promise<VerifiedFi
     uid: decoded.uid,
     email: decoded.email,
     emailVerified: Boolean(decoded.email_verified),
+    signInProvider,
     firstName: firstName || "",
     lastName: rest.join(" "),
     photoURL: typeof decoded.picture === "string" ? decoded.picture : "",

